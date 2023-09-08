@@ -128,9 +128,18 @@ namespace Company.Function
             OpenAIClient client = new(new Uri(endpoint), new AzureKeyCredential(key));
 
             // Call the OpenAI chat endpoint
-            Response<ChatCompletions> chat_response = client.GetChatCompletions(
+            Response<ChatCompletions> chat_response = null;
+            try
+            {
+            chat_response = client.GetChatCompletions(
                             deploymentOrModelName: model,
                             chatCompletionsOptions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GetChatCompletions Error: {ex.Message}");
+                throw new Exception($"GetChatCompletions Error: {ex.Message}");
+            }
 
             // Add the response to the list of messages
             chatCompletionsOptions.Messages.Add(chat_response.Value.Choices[0].Message);
