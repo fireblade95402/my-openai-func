@@ -51,7 +51,8 @@ namespace Company.Function
             string system_message = GetEnvironmentVariable("AZURE_OPENAI_SYSTEM_MESSAGE", null, true, true);
             string user_message = GetEnvironmentVariable("AZURE_OPENAI_USER_MESSAGE", null, true, true);
             int max_tokens = Convert.ToInt32(GetEnvironmentVariable("AZURE_OPENAI_MAX_TOKENS", null, true, true));
-            double temperature = Convert.ToDouble(GetEnvironmentVariable("AZURE_OPENAI_TEMPERATURE", null, true, true));
+            double temperature = Convert.ToDouble(GetEnvironmentVariable("AZURE_OPENAI_TEMPERATURE", "0.9", true, true));
+
 
             // Create a list of messages to send to the OpenAI chat endpoint
             List<ChatMessage> messages = new List<ChatMessage>();
@@ -120,6 +121,8 @@ namespace Company.Function
             chatCompletionsOptions.MaxTokens = max_tokens;
             chatCompletionsOptions.User = user;
             chatCompletionsOptions.Temperature = (float)temperature;
+
+
 
             // Add the question to the list of messages to send to the OpenAI chat endpoint
             chatCompletionsOptions.Messages.Add(new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.User, chat_question));
