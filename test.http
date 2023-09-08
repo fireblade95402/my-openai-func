@@ -34,13 +34,6 @@ content-type: application/json
 
 ###
 
-{{body}}
 
-POST http://localhost:7071/api/call_openai
-content-type: application/json
-
-{{body}}
-
-###
 
 
