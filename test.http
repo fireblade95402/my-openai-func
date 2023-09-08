@@ -32,9 +32,6 @@ content-type: application/json
   }
 ]
 
-
-
-
 ###
 
 POST http://localhost:7071/api/call_openai?chat_question=What%20is%20F1?

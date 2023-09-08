@@ -44,9 +44,6 @@ namespace Company.Function
         public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "Get", "post")] HttpRequestData req)
         {
 
-            //log the request
-            _logger.LogInformation("Call OPENAI HTTP trigger function processing a request.");
-
             // Get the environment variables for the OpenAI endpoint, key and model
             string endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT", null, true, true);
             string key = GetEnvironmentVariable("AZURE_OPENAI_KEY", null, true, true);
@@ -64,6 +61,12 @@ namespace Company.Function
             // Get the user from the query string
             var user = req.Query["user"] ?? "user";
 
+            //Example of how to get the headers
+            //request headers 
+            // var headers = req.Headers;
+            // //get Host from headers
+            // var host = headers.GetValues("AZURE_OPENAI_SYSTEM_MESSAGE").FirstOrDefault() ;
+            
             //Log the question and user
             _logger.LogInformation($"User: {user}");
             _logger.LogInformation($"Question: {chat_question}");
@@ -83,6 +86,7 @@ namespace Company.Function
                 {
                     Messages = 
                     {
+                        // Add the system message to the list of messages to send to the OpenAI chat endpoint
                         new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.System, system_message),
                     }
                 };
