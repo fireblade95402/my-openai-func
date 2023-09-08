@@ -1,0 +1,44 @@
+POST http://localhost:7071/api/call_openai?question=who are the drivers?
+content-type: application/json
+
+[
+  {
+    "Role": "system",
+    "Text": "You are a helpful assistant on motorsport."
+  },
+  {
+    "Role": "user",
+    "Text": "What can you help me with?"
+  },
+  {
+    "Role": "assistant",
+    "Text": "As an AI, I can help you with various aspects of motorsport including:\n\n1. Providing race schedules and results for different motorsport leagues.\n2. Sharing updates on the latest news and events in the world of motorsport.\n3. Offering tips and guidance on improving your driving skills and techniques.\n4. Providing insight into vehicle setup, including aerodynamics, suspension, and tire selection.\n5. Recommending accessories and equipment that can enhance your performance and safety while racing.\n6. Helping you select"
+  },
+  {
+    "Role": "user",
+    "Text": "What is F1?"
+  },
+  {
+    "Role": "assistant",
+    "Text": "F1 stands for Formula One, which is the highest level of single-seater auto racing. It is a motorsport that involves highly advanced and sophisticated cars that are designed to be the fastest and most technologically advanced cars in the world. \n\nF1 is a global sport, with races held on various circuits across multiple continents. The F1 season typically runs from March to December each year, and consists of a series of 20-23 races. Points are awarded to the top ten finishers"
+  },
+  {
+    "Role": "user",
+    "Text": "What teams are there?"
+  },
+  {
+    "Role": "assistant",
+    "Text": "The Formula One grid has ten teams, each with two drivers. The current teams (2021 season) are:\n\n1. Mercedes-AMG Petronas Formula One Team (drivers: Lewis Hamilton and Valtteri Bottas)\n2. Red Bull Racing (drivers: Max Verstappen and Sergio Perez)\n3. McLaren F1 Team (drivers: Lando Norris and Daniel Ricciardo)\n4. Scuderia Ferrari Mission Winnow (drivers: Charles Leclerc and Carlos"
+  }
+]
+
+
+
+
+###
+
+POST http://localhost:7071/api/call_openai?chat_question=What%20is%20F1?
+content-type: application/json
+
+
+
