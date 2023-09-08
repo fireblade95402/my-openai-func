@@ -28,4 +28,12 @@ content-type: {{contentType}}
 
 {{messages}}
 
+###
 
+@messages2 = {{step1.response.body.$}}
+
+# @name step3
+POST http://{{host}}/api/call_openai?question=where are the races?
+content-type: {{contentType}}
+
+{{messages2}}
