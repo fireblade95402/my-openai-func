@@ -48,7 +48,6 @@ namespace Company.Function
             string endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT", null, true, true);
             string key = GetEnvironmentVariable("AZURE_OPENAI_KEY", null, true, true);
             string model = GetEnvironmentVariable("AZURE_OPENAI_MODEL", null, true, true);
-            string system_message = GetEnvironmentVariable("AZURE_OPENAI_SYSTEM_MESSAGE", null, true, true);
             string user_message = GetEnvironmentVariable("AZURE_OPENAI_USER_MESSAGE", null, true, true);
             int max_tokens = Convert.ToInt32(GetEnvironmentVariable("AZURE_OPENAI_MAX_TOKENS", null, true, true));
             double temperature = Convert.ToDouble(GetEnvironmentVariable("AZURE_OPENAI_TEMPERATURE", "0.9", true, true));
@@ -59,6 +58,10 @@ namespace Company.Function
 
             // Get the question from the query string
             var chat_question = req.Query["question"] ?? user_message;
+
+            // Get the system message from the query string
+            var system_message = req.Query["system_message"] ?? GetEnvironmentVariable("AZURE_OPENAI_SYSTEM_MESSAGE", null, true, true);
+
             // Get the user from the query string
             var user = req.Query["user"] ?? "user";
 
