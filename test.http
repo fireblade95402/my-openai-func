@@ -20,20 +20,20 @@ content-type: {{contentType}}
 
 ###
 
-@messages = {{step1.response.body.$}}
+@step1_history = {{step1.response.body.$}}
 
 # @name step2
 POST http://{{host}}/api/call_openai?question=How are the drivers?
 content-type: {{contentType}}
 
-{{messages}}
+{{step1_history}}
 
 ###
 
-@messages2 = {{step1.response.body.$}}
+@step2_history = {{step1.response.body.$}}
 
 # @name step3
 POST http://{{host}}/api/call_openai?question=where are the races?
 content-type: {{contentType}}
 
-{{messages2}}
+{{step2_history}}
