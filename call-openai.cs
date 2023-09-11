@@ -41,7 +41,7 @@ namespace Company.Function
 
         //MAin Function to call OpenAI
         [Function("call_openai")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "Get", "post")] HttpRequestData req)
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
         {
 
             // Get the environment variables for the OpenAI endpoint, key and model
