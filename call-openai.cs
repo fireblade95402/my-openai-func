@@ -72,6 +72,7 @@ namespace Company.Function
             // var host = headers.GetValues("AZURE_OPENAI_SYSTEM_MESSAGE").FirstOrDefault() ;
             
             //Log the question and user
+            _logger.LogInformation($"System Message: {system_message}");
             _logger.LogInformation($"User: {user}");
             _logger.LogInformation($"Question: {chat_question}");
 

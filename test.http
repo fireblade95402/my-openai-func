@@ -4,7 +4,18 @@
 @contentType = application/json
 
 
+POST  http://{{host}}/api/call_openai
+content-type: {{contentType}}
+
+###
+
 POST http://{{host}}/api/call_openai?system_message=You are a helpful assistant on HR processes&question=show me an apprecial system
+content-type: {{contentType}}
+
+###
+
+
+POST http://{{host}}/api/call_openai?system_message=You are a helpful assistant on writing code in vb&question=write me a helloworld program
 content-type: {{contentType}}
 
 ###
@@ -21,6 +32,10 @@ content-type: {{contentType}}
   {
     "Role": "user",
     "Text": "What can you help me with?"
+  },
+  {
+    "Role": "assistant",
+    "Text": "I can help you with anything related to motorsport! Some examples of how I can assist you are:\n\n- Answering questions about different motorsports such as Formula 1, NASCAR, MotoGP, etc.\n- Providing information about race tracks, teams, drivers, and their history.\n- Giving analysis and predictions of upcoming races and championships.\n- Sharing news and updates on the latest developments in the world of motorsport.\n- Providing tips and advice on how to get started in motorsport as a driver, mechanic, or other roles.\n- Offering insights into the technical aspects of vehicles and their performance on the track."
   }
 ]
 
@@ -29,7 +44,7 @@ content-type: {{contentType}}
 @step1_history = {{step1.response.body.$}}
 
 # @name step2
-POST http://{{host}}/api/call_openai?question=How are the drivers?
+POST http://{{host}}/api/call_openai?question=Who are the drivers?
 content-type: {{contentType}}
 
 {{step1_history}}
