@@ -20,7 +20,7 @@ content-type: {{contentType}}
 
 ###
 
-POST http://{{host}}/api/call_openai?system_message=You are a helpful assistant on writing short scifi stories. That are in no more than 500 words.&question=write me a love story set on the moon
+POST http://{{host}}/api/call_openai?system_message=You are a helpful assistant on writing short scifi stories. That are in no more than 500 words.&question=write me a love story set in a yellow space ship
 content-type: {{contentType}}
 
 ###
