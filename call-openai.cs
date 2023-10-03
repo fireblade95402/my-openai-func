@@ -21,14 +21,16 @@ namespace Company.Function
         // Create a class to hold the chat messages
         private class ChatMessage
         {
-            public ChatMessage(string role, string text)
+            public ChatMessage(string role, string text, string image = "")
             {
                 Role = role;
                 Text = text;
+                Image = image;
             }
 
             public string Role { get; set; }
             public string Text { get; set; }
+            public string Image { get; set; }
         }
 
         //create logger
@@ -92,7 +94,7 @@ namespace Company.Function
                     Messages = 
                     {
                         // Add the system message to the list of messages to send to the OpenAI chat endpoint
-                        new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.System, system_message),
+                        new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.System, system_message)
                     }
                 };
             }
@@ -148,6 +150,17 @@ namespace Company.Function
                 throw new Exception($"GetChatCompletions Error: {ex.Message}");
             }
 
+            //Generate Dalle Image
+            Response<ImageGenerations> imageGenerations = await client.GetImageGenerationsAsync(
+                new ImageGenerationOptions()
+                {
+                    Prompt = chat_response.Value.Choices[0].Message.ToString(),
+                    Size = ImageSize.Size256x256,
+                });
+
+            // Image Generations responses provide URLs you can use to retrieve requested images
+            Uri imageUri = imageGenerations.Value.Data[0].Url;
+
             // Add the response to the list of messages
             chatCompletionsOptions.Messages.Add(chat_response.Value.Choices[0].Message);
 
@@ -158,7 +171,7 @@ namespace Company.Function
             messages = new List<ChatMessage>();
             foreach (var message in chatCompletionsOptions.Messages)
             {
-               messages.Add(new ChatMessage(message.Role.ToString(), message.Content));
+               messages.Add(new ChatMessage(message.Role.ToString(), message.Content, imageUri.ToString()));
 
             }
             // Convert the list of messages to JSON
