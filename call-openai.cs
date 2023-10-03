@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Text;
 using System.Reflection;
+using Azure.Messaging;
 
 
 
@@ -21,14 +22,16 @@ namespace Company.Function
         // Create a class to hold the chat messages
         private class ChatMessage
         {
-            public ChatMessage(string role, string text)
+            public ChatMessage(string role, string text, string image = "")
             {
                 Role = role;
                 Text = text;
+                Image = image;
             }
 
             public string Role { get; set; }
             public string Text { get; set; }
+            public string Image { get; set; }
         }
 
         //create logger
@@ -51,6 +54,7 @@ namespace Company.Function
             string user_message = GetEnvironmentVariable("AZURE_OPENAI_USER_MESSAGE", null, true, true);
             int max_tokens = Convert.ToInt32(GetEnvironmentVariable("AZURE_OPENAI_MAX_TOKENS", null, true, true));
             double temperature = Convert.ToDouble(GetEnvironmentVariable("AZURE_OPENAI_TEMPERATURE", "0.9", true, true));
+            bool image_generation = Convert.ToBoolean(GetEnvironmentVariable("AZURE_OPENAI_IMAGE_GENERATION", "false", true, true));
 
 
             // Create a list of messages to send to the OpenAI chat endpoint
@@ -87,14 +91,7 @@ namespace Company.Function
             // If the request body is empty, then this is the first request
             if (string.IsNullOrEmpty(requestBody))
             {
-                chatCompletionsOptions = new ChatCompletionsOptions()
-                {
-                    Messages = 
-                    {
-                        // Add the system message to the list of messages to send to the OpenAI chat endpoint
-                        new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.System, system_message),
-                    }
-                };
+                messages.Add(new ChatMessage("system", system_message));
             }
             else
             {
@@ -107,13 +104,6 @@ namespace Company.Function
                     if (messages.Count == 0){
                         throw new Exception($"Error with loading history");
                     }
-                    // Create the chat options
-                    // Loop through the messages and add them to the list of messages to send to the OpenAI chat endpoint
-                    chatCompletionsOptions = new ChatCompletionsOptions();
-                    foreach (ChatMessage message in messages)
-                    {
-                        chatCompletionsOptions.Messages.Add(new Azure.AI.OpenAI.ChatMessage(message.Role, message.Text));
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -121,15 +111,22 @@ namespace Company.Function
                     throw new Exception($"Error: {ex.Message}");
                 }
             }
+
+            // Create the chat options
+            // Loop through the messages and add them to the list of messages to send to the OpenAI chat endpoint
+            chatCompletionsOptions = new ChatCompletionsOptions();
+            foreach (ChatMessage message in messages)
+            {
+                chatCompletionsOptions.Messages.Add(new Azure.AI.OpenAI.ChatMessage(message.Role, message.Text));
+            }
+            // Add the question to the list of messages to send to the OpenAI chat endpoint
+            messages.Add(new ChatMessage("user", chat_question));
+            chatCompletionsOptions.Messages.Add(new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.User, chat_question));
+
             // Set the chat options
             chatCompletionsOptions.MaxTokens = max_tokens;
             chatCompletionsOptions.User = user;
             chatCompletionsOptions.Temperature = (float)temperature;
-
-
-
-            // Add the question to the list of messages to send to the OpenAI chat endpoint
-            chatCompletionsOptions.Messages.Add(new Azure.AI.OpenAI.ChatMessage(Azure.AI.OpenAI.ChatRole.User, chat_question));
 
             // Create the OpenAI client
             OpenAIClient client = new(new Uri(endpoint), new AzureKeyCredential(key));
@@ -148,19 +145,33 @@ namespace Company.Function
                 throw new Exception($"GetChatCompletions Error: {ex.Message}");
             }
 
-            // Add the response to the list of messages
-            chatCompletionsOptions.Messages.Add(chat_response.Value.Choices[0].Message);
-
-            //Log to message
-            _logger.LogInformation($"Response: {chat_response.Value.Choices[0].Message.Content}");
-
-            // Loop through the messages and add them to the list of messages to return
-            messages = new List<ChatMessage>();
-            foreach (var message in chatCompletionsOptions.Messages)
+            // Loop through the responses and generate the images and add them to the list of messages
+            foreach (var resp_message in chat_response.Value.Choices)
             {
-               messages.Add(new ChatMessage(message.Role.ToString(), message.Content));
+                _logger.LogInformation($"Response: {resp_message.Message.Content}");
+            
+
+                //Generate Image
+                string imageUri = "";
+                if (image_generation == true)
+                {
+                    Response<ImageGenerations> imageGenerations = await client.GetImageGenerationsAsync(
+                        new ImageGenerationOptions()
+                        {
+                            Prompt = chat_question + "? " +  resp_message.Message.Content.ToString(),
+                            Size = ImageSize.Size512x512,
+                        });
+
+                    // Image Generations responses provide URLs you can use to retrieve requested images
+                    imageUri = imageGenerations.Value.Data[0].Url.ToString();
+
+                    _logger.LogInformation($"Image: {imageUri}");
+                }
+                // Add the response to the list of messages
+                messages.Add(new ChatMessage(resp_message.Message.Role.ToString(), resp_message.Message.Content, imageUri));
 
             }
+
             // Convert the list of messages to JSON
             var jsonToReturn = JsonConvert.SerializeObject(messages);
 
