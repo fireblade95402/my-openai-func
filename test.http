@@ -3,95 +3,22 @@
 @host = {{hostname}}:{{port}}
 @contentType = application/json
 
-
-POST  http://{{host}}/api/call_openai?question=Summerize the Corvus document only return the json object
-content-type: {{contentType}}
-
-
 ###
 
-POST http://{{host}}/api/call_openai?question=chaange to a cvs output
-content-type: {{contentType}}
+@question = "Summerize the Corvus document only return the json object"
 
-[
-  {
-    "Role": "system",
-    "Text": "Summarise the document into the following columns : Disease area or tech platform, Company name, asset name, target/pathway, Mechanism of action and indication, Stage of development, Available data (preclinical models, tox studies,     clinical data etc), IP, patent applications, LOE, Partnering interests (structure, regions), Any additional background on the molecule (re-positioning etc) , Third party obligations, Predicted launch. Return in a JSON."
-  },
-  {
-    "Role": "user",
-    "Text": "Summerize the Corvus document only return the json object"
-  },
-  {
-    "Role": "assistant",
-    "Text": "```json\n{\n  \"Disease area or tech platform\": \"Oncology/Immuno-Oncology\",\n  \"Company name\": \"Corvus Pharmaceuticals\",\n  \"Asset name\": \"CPI-818\",\n  \"Target/pathway\": \"ITK (Interleukin-2-inducible T-cell kinase)\",\n  \"Mechanism of action and indication\": \"CPI-818 is an oral small molecule designed to inhibit ITK and modulate T-cell receptor signaling to treat T-cell lymphomas and other cancers.\",\n  \"Stage of development\": \"Phase 1/1b\",\n  \"Available data\": \"Preclinical models, early clinical data\",\n  \"IP, patent applications, LOE\": \"Multiple patents filed, specific details not provided\",\n  \"Partnering interests (structure, regions)\": \"Open to collaborations, especially in regions outside the US\",\n  \"Any additional background on the molecule\": \"CPI-818 is being evaluated for potential in other T-cell-mediated diseases beyond oncology\",\n  \"Third party obligations\": \"None disclosed\",\n  \"Predicted launch\": \"2025 (tentative)\"\n}\n```"
-  }
-]
-
-###
-
-
-POST http://{{host}}/api/call_openai?system_message=You are a helpful assistant on writing code in vb&question=write me a helloworld program
+# @name docsum1
+POST https://demo-doc-extract-mwg.azurewebsites.net/api/call_openai?code=DKiSzxj3f2X9fvG63oQPHF3WLReHy1uxp3Qb9-zTCOlWAzFuylwGAA%3D%3D&question={{question}}
 content-type: {{contentType}}
 
 ###
 
-POST http://{{host}}/api/call_openai?system_message=You are a helpful assistant on writing short scifi stories. That are in no more than 500 words.&question=write me a love story set in a yellow space ship
+@question = "change to csv format to load into excel"
+
+@doc_sum1 = {{docsum1.response.body.$}}
+
+# @name docsum2
+POST https://demo-doc-extract-mwg.azurewebsites.net/api/call_openai?code=DKiSzxj3f2X9fvG63oQPHF3WLReHy1uxp3Qb9-zTCOlWAzFuylwGAA%3D%3D&search_index=vector_index2&question={{question}}
 content-type: {{contentType}}
 
-###
-
-# @name step1
-POST http://{{host}}/api/call_openai?question=Summarize the Mozart Document
-content-type: {{contentType}}
-[
-  {
-    "Role": "system",
-    "Text": "Summarize the document into the following columns : Disease area or tech platform, Company name, asset name, target/pathway, Mechanism of action and indication, Stage of development, Available data (preclinical models, tox studies,     clinical data etc), IP, patent applications, LOE, Partnering interests (structure, regions), Any additional background on the molecule (re-positioning etc) , Third party obligations, Predicted launch. Return in a HTML table."
-  }
-]
-
-###
-
-@step1_history = {{step1.response.body.$}}
-
-# @name step2
-POST http://{{host}}/api/call_openai?question=Who are the drivers?
-content-type: {{contentType}}
-
-{{step1_history}}
-
-###
-
-@step2_history = {{step1.response.body.$}}
-
-# @name step3
-POST http://{{host}}/api/call_openai?question=where are the races?
-content-type: {{contentType}}
-
-{{step2_history}}
-
-###
-
-POST https://demo-doc-extract-mwg.azurewebsites.net/api/call_openai?code=DKiSzxj3f2X9fvG63oQPHF3WLReHy1uxp3Qb9-zTCOlWAzFuylwGAA%3D%3D&question=Summerize the Corvus document only return the json object
-content-type: {{contentType}}
-
-###
-
-POST https://demo-doc-extract-mwg.azurewebsites.net/api/call_openai?code=DKiSzxj3f2X9fvG63oQPHF3WLReHy1uxp3Qb9-zTCOlWAzFuylwGAA%3D%3D&question=change to csv format to load into excel
-content-type: {{contentType}}
-
-[
-  {
-    "Role": "system",
-    "Text": "Summarize the document into the following columns : Disease area or tech platform, Company name, asset name, target/pathway, Mechanism of action and indication, Stage of development, Available data (preclinical models, tox studies,     clinical data etc), IP, patent applications, LOE, Partnering interests (structure, regions), Any additional background on the molecule (re-positioning etc) , Third party obligations, Predicted launch. Return in a JSON."
-  },
-  {
-    "Role": "user",
-    "Text": "Summerize the Corvus document only return the json object"
-  },
-  {
-    "Role": "assistant",
-    "Text": "```json\n{\n  \"Disease area or tech platform\": \"Oncology\",\n  \"Company name\": \"Corvus Pharmaceuticals\",\n  \"asset name\": \"CPI-818\",\n  \"target/pathway\": \"ITK (Interleukin-2-inducible T-cell kinase)\",\n  \"Mechanism of action and indication\": \"ITK inhibitor for T-cell lymphomas\",\n  \"Stage of development\": \"Phase 1/1b\",\n  \"Available data (preclinical models, tox studies, clinical data etc)\": \"Preclinical models, early clinical data\",\n  \"IP, patent applications, LOE\": \"Patent applications filed, LOE details not specified\",\n  \"Partnering interests (structure, regions)\": \"Open to partnerships, primarily in regions outside the US\",\n  \"Any additional background on the molecule (re-positioning etc)\": \"Potential for use in other T-cell mediated diseases\",\n  \"Third party obligations\": \"None specified\",\n  \"Predicted launch\": \"Post-Phase 2/3 trials, specific date not provided\"\n}\n```"
-  }
-]
+{{doc_sum1}}
